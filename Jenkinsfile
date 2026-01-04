@@ -1,5 +1,6 @@
 pipeline{
-    agent {label 'sonar'}
+    // agent {label 'sonar'}
+    agent any
     stages{
        /*stage('Git Checkout Stage'){
             steps{
