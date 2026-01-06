@@ -6,8 +6,7 @@ pipeline {
     }
 
     environment {
-        
-        SCANNER_HOME = tool 'sonar'
+        SCANNER_HOME = tool 'SonarScanner'
     }
 
     stages {
@@ -36,15 +35,15 @@ pipeline {
             }
         }
 
-        stage('SonarQube') {
+        stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar_install') {
-                    sh '''
-                        $SCANNER_HOME/bin/sonar \
-                        -Dsonar.projectName=Validate \
-                        -Dsonar.projectKey=Validate \
-                        -Dsonar.host.url=http://13.232.129.239:9000
-                    '''
+                    sh """
+                    ${SCANNER_HOME}/bin/sonar-scanner \
+                    -Dsonar.projectName=Validate \
+                    -Dsonar.projectKey=Validate \
+                    -Dsonar.host.url=http://13.232.129.239:9000
+                    """
                 }
             }
         }
