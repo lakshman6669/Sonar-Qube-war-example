@@ -10,7 +10,7 @@ pipeline {
 
         stage('Upload to Artifactory using curl') {
             environment {
-                ART_URL = "http://65.1.148.156:8081/artifactory/pipeline-repo"
+                ART_URL = "http://65.1.148.156:8081/artifactory/maven-expo"
             }
             steps {
                 withCredentials([usernamePassword(
