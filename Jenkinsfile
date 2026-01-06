@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     def server = Artifactory.newServer(
-                        url: 'http://65.1.148.156:8081/artifactory',
+                        url: 'http://3.110.155.145:8081/artifactory',
                         credentialsId: 'jfrog'
                     )
 
