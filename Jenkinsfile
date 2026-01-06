@@ -5,6 +5,11 @@ pipeline {
         maven 'maven'
     }
 
+    environment {
+        
+        SCANNER_HOME = tool 'sonar'
+    }
+
     stages {
         stage('Build & Deploy to JFrog Artifactory') {
             steps {
@@ -27,6 +32,19 @@ pipeline {
                         pom: 'pom.xml',
                         goals: 'clean deploy'
                     )
+                }
+            }
+        }
+
+        stage('SonarQube') {
+            steps {
+                withSonarQubeEnv('sonar_install') {
+                    sh '''
+                        $SCANNER_HOME/bin/sonar \
+                        -Dsonar.projectName=Validate \
+                        -Dsonar.projectKey=Validate \
+                        -Dsonar.host.url=http://13.232.129.239:9000
+                    '''
                 }
             }
         }
