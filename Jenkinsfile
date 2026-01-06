@@ -1,33 +1,32 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven'
+    }
+
     stages {
-        stage('Build') {
+        stage('Build & Deploy to JFrog Artifactory') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
+                script {
+                    def server = Artifactory.newServer(
+                        url: 'http://65.1.148.156:8081/artifactory',
+                        credentialsId: 'jfrog'
+                    )
 
-        stage('Upload to Artifactory using curl') {
-            environment {
-                ART_URL = "http://65.1.148.156:8081/artifactory/maven-expo"
-            }
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'jfrog',
-                    usernameVariable: 'ART_USER',
-                    passwordVariable: 'ART_PASS'
-                )]) {
-                    sh '''
-                    FILE=$(ls target/*.jar | head -n 1)
-                    FILENAME=$(basename "$FILE")
+                    def rtMaven = Artifactory.newMavenBuild()
+                    rtMaven.tool = 'maven'
 
-                    echo "Uploading $FILENAME"
+                    rtMaven.deployer(
+                        server: server,
+                        snapshotRepo: 'pipeline-repo',
+                        releaseRepo: 'pipeline-repo'
+                    )
 
-                    curl -X PUT -u $ART_USER:$ART_PASS \
-                    -T "$FILE" \
-                    "$ART_URL/$FILENAME"
-                    '''
+                    rtMaven.run(
+                        pom: 'pom.xml',
+                        goals: 'clean deploy'
+                    )
                 }
             }
         }
